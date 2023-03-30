@@ -110,7 +110,6 @@ class HistoryUI():
         with self._user_window.frame:
             with ui.VStack(style=User_Enter_Style):
                 self.build_user_frame()
-                self.build_loading_frame()
           
     def build_user_frame(self):
         self.LOGIN = ui.ScrollingFrame()
@@ -128,22 +127,6 @@ class HistoryUI():
                 
                 ui.Button('Start', alignment=ui.Alignment.CENTER, height=40, clicked_fn=self.controller.on_click_user_enter)
 
-    def build_loading_frame(self):
-        self.loading = ui.ScrollingFrame(visible = False)
-        with self.loading:
-            with ui.VStack(style=User_Enter_Style):
-                ui.Label('LOADING FILE',name='title', alignment=ui.Alignment.CENTER)
-                ui.Spacer(height=10)
-                user = ui.Label(self.user, visible=False)
-                with ui.HStack():
-                    ui.Label('User Name  : ', width=ui.Percent(25), alignment=ui.Alignment.RIGHT_TOP)
-                    nameField = ui.StringField(height=25, alignment=ui.Alignment.H_CENTER)
-                    nameField.model.add_value_changed_fn(
-                        lambda m, l=user:self.setUserName(m.get_value_as_string(), user)
-                    )
-                
-                ui.Button('Start', alignment=ui.Alignment.CENTER, height=40, clicked_fn=self.controller.on_click_user_enter)
-        
     def build_save_window(self) -> None:
         self._save_window = ui.Window('Save', width=350, height=200)
         
@@ -182,6 +165,7 @@ class HistoryUI():
                     ui.Button(
                         style = Icon.SAVE_STYLE, width=30, height=30, name='user', tooltip='Logout', 
                         alignment=ui.Alignment.RIGHT,
+                        mouse_pressed_fn=self.reLogin,
                         image_url = Icon.User
                     )
                 with ui.HStack(height=40):
@@ -265,6 +249,7 @@ class HistoryUI():
         self.historyStack.insert(4, '')
         
         self.checkpointModel.on_changed(self.historyStack)
+        self._save_window = None
     
     def _on_clicked_cancel_btn(self):
         self.command = ''
@@ -278,11 +263,26 @@ class HistoryUI():
         self.command = text
         commandLabel.text = self.command
     
+    def reLogin(self):
+        self.controller._layer.rebuild()
+        self.user = None
+        self.command = None
+        self.addNew = None
+        self.historyStack = None
+        self._save_window = None
+        self._block_frame = None
+        self._user_window = None
+        self._userEnter_Frame = None 
+        self._Hist_frame = None
+        
+        self.build_user()
+    
     def shutdown(self):
         self.controller = None 
         self.user = None
         self.command = None
         self.addNew = None
+        self.historyStack = None
         self._save_window = None
         self._block_frame = None
         self._user_window = None

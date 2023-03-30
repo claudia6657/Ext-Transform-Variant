@@ -332,6 +332,19 @@ class LayerController():
     def create_folder(self, path):
         omni.client.create_folder(path)
 
+    def rebuild(self):
+        self.user = ''
+        self.layerStack = None
+        self.mutedLayerStack = None
+        self.userLayerStack = None
+        self.muteStack = None
+        self.loadStack = None
+        self.rootLayer = None
+        self.BaseLayer = None
+        self.usedLayer = None
+        self.newUser = None
+        self.tempLayer = None
+
     def shutdown(self):
         self.user = ''
         self.layerStack = None
